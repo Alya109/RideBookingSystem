@@ -8,11 +8,11 @@ class Booking:
         self.end_location = end_location
         self.distance = distance
         self.total_cost = 
+
+class ManageBooking():
     def add_booking():
 
     def check_all_booking():
 
     def cancel_booking():
         
-class ManageBooking():
-    
