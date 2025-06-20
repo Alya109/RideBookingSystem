@@ -12,7 +12,7 @@ class Vehicle(ABC):
         
 class Van(Vehicle):
     def cost_calculation(self, distance) -> float:
-        return distance * self._cost_per_mile # Extra fee
+        return distance * self._cost_per_mile # Extra fee 
         
 class Car(Vehicle):
     def cost_calculation(self, distance) -> float:
