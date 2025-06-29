@@ -1,4 +1,4 @@
-#concept ko incase
+#concept ni Delfin incase
 
 import abc
 
