@@ -1,9 +1,29 @@
 from tkinter import *
 
+# Base window setup
+window = Tk()
+window.title("Ride Booking System") 
+window.geometry("420x700")  # Set the window size
+window.configure(bg="#d7f5fc")  # Set the background color
 
-tk = Tk()
-tk.title("Ride Booking System") 
-tk.geometry("400x700")  # Set the window size
-tk.configure(bg="#d7f5fc")  # Set the background color
+# Logo top frame setup
+top_frame = Frame(window, bg="#035891", height=80)
+top_frame.pack(fill="x", side="top")
 
-tk.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.mainloop()
