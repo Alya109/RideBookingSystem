@@ -1,6 +1,6 @@
 // Members // Role
 Lumabi // Project Manager, Back-end Developer
-Rivera //
+Rivera // UI/UX Designer
 Odrunia //
 Modesto // QA/Test Engineer
 Simbulan // Back-end Developer
