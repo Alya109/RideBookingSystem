@@ -11,5 +11,4 @@ class Booking:
 
 class ManageBooking():
     def add_booking():
-        # Logic to add a booking
-        pass
+        
