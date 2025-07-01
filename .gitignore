@@ -209,3 +209,7 @@ __marimo__/
 /__pycache__
 /.vscode
 /backend/__pycache__
+backend/__pycache__/booking_system.cpython-313.pyc
+backend/__pycache__/distance.cpython-313.pyc
+backend/__pycache__/timesimulation.cpython-313.pyc
+backend/__pycache__/vehicle.cpython-313.pyc
