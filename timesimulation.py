@@ -11,7 +11,7 @@ vehicle_speeds = {
 def simulate_time(distance, vehicle_type):
     
     speed = vehicle_speeds.get(vehicle_type, 30)  # Default speed if not found
-    eta = (distance / speed)  * 60 # time in hours
+    eta_minutes = (distance / speed)  * 60 # time in hours
     
     simulated_time = random.randint(int(eta_minutes * 0.9), int(eta_minutes * 1.1))
     return simulated_time
