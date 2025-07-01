@@ -10,3 +10,9 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1009,Active,Iadwladw,Car,32nd Street,Carlos P. Garcia Avenue,07-01-2025,8.27,P 243.82
 1010,Cancelled,Earl,Motorcycle,Sumulong Highway,Pureza Street,07-01-2025,9.73,P 157.26
 1011,Cancelled,Hdwadda,Car,Carlos P. Garcia Avenue,McArthur Highway,07-02-2025,32.73,P 662.24
+1012,Active,Megumi,Car,32nd Street,Don Mariano Marcos Avenue,07-02-2025,8.59,P 246.20
+1013,Active,Alya,Car,32nd Street,Kalayaan Avenue,07-02-2025,1.56,P 125.80
+1014,Active,Alya,Motorcycle,32nd Street,Magsaysay Avenue,07-02-2025,156.95,P 1629.50
+1015,Active,Alya,Motorcycle,Don Mariano Marcos Avenue,P. Burgos Street,07-02-2025,63.07,P 690.71
+1016,Active,Alya,Van,Don Mariano Marcos Avenue,P. Burgos Street,07-02-2025,63.07,P 1540.13
+1017,Cancelled,dasasa,Motorcycle,32nd Street,Sumulong Highway,07-02-2025,7.33,P 133.29

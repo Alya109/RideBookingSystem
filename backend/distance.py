@@ -28,7 +28,6 @@ class StreetCoordinates:
         coord2 = cls.street_coords[street2]
         return geopy_distance(coord1, coord2).miles
 
-print("[StreetCoordinates] Loaded streets:")
-for s in StreetCoordinates.street_coords:
-    print(f"  - {s}")
-
+    @classmethod
+    def calculate_distance_from_coords(cls, coord1, coord2):
+        return geopy_distance(coord1, coord2).miles
