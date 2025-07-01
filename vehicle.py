@@ -13,7 +13,10 @@ class Vehicle(ABC):
     @abstractmethod
     def calculate_cost(self) -> float:
         pass
-
+    
+    def get_vehicle_name(self) -> str:
+        return self.name
+    
 """ Child class vehicle types """   
   
 class Motorcycle(Vehicle):
@@ -31,7 +34,7 @@ class Taxi(Vehicle):
         super().__init__(name="Taxi", base_fee=80, cost_per_mile=12, capacity=4, luxury_fee=0, rate_per_minute=1.5)
     
     def calculate_cost(self, distance: float, time: float = 0) -> float:
-        total_cost = self._base_fee + (distance * self._cost_per_mile)  # Assuming a fixed distance of 10 miles for simplicity
+        total_cost = self._base_fee + (distance * self._cost_per_mile) + (time * self._rate_per_minute) # Assuming a fixed distance of 10 miles for simplicity
         return total_cost
     
 class Car(Vehicle):

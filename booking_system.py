@@ -1,5 +1,6 @@
 import pandas as pd
 from booking import Booking
+from vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
 
 class BookingSystem:
     def __init__(self, file_path="csv_files/bookings.csv"):
