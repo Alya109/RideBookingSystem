@@ -1,12 +1,11 @@
 import datetime
-from vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
-from distance import calculate_distance
+from distance import StreetCoordinates
 from timesimulation import simulate_time
 
 class Booking:
     booking_id_counter = 1000
     
-    def __init__(self, user, vehicle_type, start_loc, end_loc, time=0) -> None:
+    def __init__(self, user, vehicle_type, start_loc, end_loc) -> None:
         self.booking_id = Booking.booking_id_counter
         Booking.booking_id_counter += 1
         
@@ -16,7 +15,7 @@ class Booking:
         self.start_loc = start_loc
         self.end_loc = end_loc
         self.date = datetime.datetime.now().strftime("%m-%d-%Y")
-        self.distance = # distance calculation logic here
+        self.distance = StreetCoordinates.calculate_distance(start_loc, end_loc)
         self.time = simulate_time(self.distance, vehicle_type)
         
         vehicle = self.get_vehicle()

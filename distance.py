@@ -8,7 +8,7 @@ class StreetCoordinates:
 
     def __init__(self):
         if not StreetCoordinates.street_coords:  # Load only once
-            with open('coordinates.csv', mode='r', newline='', encoding='utf-8') as file:
+            with open('csv_files/coordinates.csv', mode='r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
                     street = row['Street'].strip()
@@ -25,10 +25,10 @@ class StreetCoordinates:
         coord2 = cls.street_coords[street2]
         return geopy_distance(coord1, coord2).miles
 
-# Example usage,
-# delete for integration
-distance_instance = StreetCoordinates()  # Initialize once to load data
-mile = distance_instance.calculate_distance("Pureza Street", "32nd Street")
-print(f"Distance: {mile:.2f} miles")
-# Delete the example usage for integration into a larger application
+# # Example usage,
+# # delete for integration
+# distance_instance = StreetCoordinates()  # Initialize once to load data
+# mile = distance_instance.calculate_distance("Pureza Street", "32nd Street")
+# print(f"Distance: {mile:.2f} miles")
+# # Delete the example usage for integration into a larger application
 
