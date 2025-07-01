@@ -7,23 +7,23 @@ from backend.vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
 
 class Booking:
     booking_id_counter = 1000
-    
-    def __init__(self, user, vehicle_type, start_loc, end_loc, time) -> None:
+
+    def __init__(self, user, vehicle_type, start_loc, end_loc, distance, time) -> None:
         self.booking_id = Booking.booking_id_counter
         Booking.booking_id_counter += 1
-        
+
         self.status = "Active"
         self.user = user
         self.vehicle_type = vehicle_type
-        self.start_loc = start_loc
+        self.start_loc = start_loc  # already readable location string
         self.end_loc = end_loc
         self.date = datetime.datetime.now().strftime("%m-%d-%Y")
-        self.distance = StreetCoordinates.calculate_distance(start_loc, end_loc)
-        self.time = simulate_time(self.distance, vehicle_type)
-        
+        self.distance = distance   
+        self.time = time           
+
         vehicle = self.get_vehicle()
         self.total_cost = vehicle.calculate_cost(self.distance, self.time)
-        
+
     def get_vehicle(self):
         return {
             "Motorcycle": Motorcycle(),
@@ -32,10 +32,10 @@ class Booking:
             "Electric Car": ElectricCar(),
             "Van": Van()
         }.get(self.vehicle_type, Car())
-        
+
     def cancel_booking(self):
         self.status = "Cancelled"
-    
+
     def to_dict(self):
         return {
             "Booking ID": self.booking_id,
@@ -76,12 +76,12 @@ class BookingSystem:
     def _save_to_file(self):
         self.bookings.to_csv(self.file_path, index=False)
         
-    def book_ride(self, user, vehicle_type, start_loc, end_loc, time=0):
-        new_booking = Booking(user, vehicle_type, start_loc, end_loc, time)
+    def book_ride(self, user, vehicle_type, start_loc, end_loc, distance, time):
+        new_booking = Booking(user, vehicle_type, start_loc, end_loc, distance, time)
         self.bookings = pd.concat([self.bookings, pd.DataFrame([new_booking.to_dict()])], ignore_index=True)
         self._save_to_file()
         return new_booking.booking_id
-    
+
     def view_bookings(self):
         return self.bookings
     

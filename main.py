@@ -84,12 +84,26 @@ class RideApp(ctk.CTk):
         self.right_panel.grid_rowconfigure(9, weight=1)
         self.right_panel.grid_columnconfigure(0, weight=1)
 
-        self.start_label = ctk.CTkLabel(self.right_panel, text="🟢 Start: not set")
+        self.start_label = ctk.CTkLabel(
+            self.right_panel,
+            text="🟢 Start: not set",
+            width=250,               # Fixed width
+            anchor="w",              # Left align
+            wraplength=0,            # Disable wrapping
+            font=ctk.CTkFont(size=13)
+        )
         self.start_label.grid(row=0, column=0, padx=10, pady=(10, 5), sticky="w")
 
-        self.end_label = ctk.CTkLabel(self.right_panel, text="🔴 End: not set")
+        self.end_label = ctk.CTkLabel(
+            self.right_panel,
+            text="🔴 End: not set",
+            width=250,
+            anchor="w",
+            wraplength=0,
+            font=ctk.CTkFont(size=13)
+        )
         self.end_label.grid(row=1, column=0, padx=10, pady=(0, 10), sticky="w")
-
+        
         vehicle_frame = ctk.CTkFrame(self.right_panel, fg_color="transparent")
         vehicle_frame.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
         vehicle_frame.grid_columnconfigure((0, 1), weight=1)
@@ -287,13 +301,16 @@ class RideApp(ctk.CTk):
             return
 
         try:
-            from backend.timesimulation import simulate_time
-            from backend.vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
+            # Get readable locations
+            start_loc = self.get_location_name(*self.clicked_start_coord)
+            end_loc = self.get_location_name(*self.clicked_end_coord)
 
+            # Compute distance, time, and cost
             distance = StreetCoordinates.calculate_distance_from_coords(
                 self.clicked_start_coord, self.clicked_end_coord
             )
             travel_time = simulate_time(distance, self.vehicle_type)
+
             vehicle_obj = {
                 "Motorcycle": Motorcycle(),
                 "Taxi": Taxi(),
@@ -301,20 +318,27 @@ class RideApp(ctk.CTk):
                 "Electric Car": ElectricCar(),
                 "Van": Van()
             }.get(self.vehicle_type, Car())
+
             cost = vehicle_obj.calculate_cost(distance, travel_time)
 
+            # Save to CSV
             booking_id = self.system.book_ride(
                 self.username,
                 self.vehicle_type,
-                f"{self.clicked_start_coord[0]:.5f}, {self.clicked_start_coord[1]:.5f}",
-                f"{self.clicked_end_coord[0]:.5f}, {self.clicked_end_coord[1]:.5f}",
+                start_loc,
+                end_loc,
+                distance,
                 travel_time
             )
+
             self.price_label.configure(text=f"✅ Ride booked! Booking ID: {booking_id}")
             if self.manage_visible:
                 self.load_bookings()
+
         except Exception as e:
             self.price_label.configure(text=f"Error: {str(e)}")
+
+                
     def cancel_booking(self):
         try:
             booking_id = int(self.cancel_entry.get())
