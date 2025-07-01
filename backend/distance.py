@@ -18,12 +18,17 @@ class StreetCoordinates:
 
     @classmethod
     def calculate_distance(cls, street1, street2):
+        street1 = street1.strip()
+        street2 = street2.strip()
+
         if street1 not in cls.street_coords or street2 not in cls.street_coords:
-            raise ValueError("One or both streets not found in the data.")
+            raise ValueError(f"Street(s) not found: {street1}, {street2}")
         
         coord1 = cls.street_coords[street1]
         coord2 = cls.street_coords[street2]
         return geopy_distance(coord1, coord2).miles
 
-
+print("[StreetCoordinates] Loaded streets:")
+for s in StreetCoordinates.street_coords:
+    print(f"  - {s}")
 

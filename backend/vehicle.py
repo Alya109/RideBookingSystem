@@ -24,7 +24,7 @@ class Motorcycle(Vehicle):
     def __init__(self) -> None:
         super().__init__(name="Motorcycle", base_fee=60, cost_per_mile=10, capacity=1, luxury_fee=0, rate_per_minute=0)
     
-    def calculate_cost(self, distance: float) -> float:
+    def calculate_cost(self, distance: float, time: float = 0) -> float:
         total_cost = self._base_fee + (distance * self._cost_per_mile)
         return total_cost 
     
@@ -64,4 +64,3 @@ class Van(Vehicle):
     def calculate_cost(self, distance: float, time: float = 0, luxury_fee: float = 0) -> float:
         total_cost = self._base_fee + (distance * self._cost_per_mile) + (time * self._rate_per_minute) + luxury_fee
         return total_cost
-

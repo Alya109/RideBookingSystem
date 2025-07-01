@@ -1,14 +1,14 @@
 import pandas as pd
 import datetime
-from distance import StreetCoordinates
-from timesimulation import simulate_time
-from vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
+from backend.distance import StreetCoordinates
+from backend.timesimulation import simulate_time
+from backend.vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
 
 
 class Booking:
     booking_id_counter = 1000
     
-    def __init__(self, user, vehicle_type, start_loc, end_loc) -> None:
+    def __init__(self, user, vehicle_type, start_loc, end_loc, time) -> None:
         self.booking_id = Booking.booking_id_counter
         Booking.booking_id_counter += 1
         
@@ -22,7 +22,16 @@ class Booking:
         self.time = simulate_time(self.distance, vehicle_type)
         
         vehicle = self.get_vehicle()
-        self.total_cost = vehicle.calculate_cost()
+        self.total_cost = vehicle.calculate_cost(self.distance, self.time)
+        
+    def get_vehicle(self):
+        return {
+            "Motorcycle": Motorcycle(),
+            "Taxi": Taxi(),
+            "Car": Car(),
+            "Electric Car": ElectricCar(),
+            "Van": Van()
+        }.get(self.vehicle_type, Car())
         
     def cancel_booking(self):
         self.status = "Cancelled"
@@ -33,18 +42,18 @@ class Booking:
             "Status": self.status,
             "User": self.user,
             "Vehicle Type": self.vehicle_type,
-            "From": self.start,
-            "To": self.end,
+            "From": self.start_loc,
+            "To": self.end_loc,
             "Date": self.date,
-            "Distance": self.distance,
-            "Travel time: ": f"{self.time} minutes",
-            "Total Cost": f"P {self.total_cost}"
-        }    
-        
+            "Distance": round(self.distance, 2),
+            "Total Cost": f"P {self.total_cost:.2f}"
+        }
+
 class BookingSystem:
     def __init__(self, file_path="csv_files/bookings.csv"):
         self.file_path = file_path
         self.bookings = self._load_from_file()
+        StreetCoordinates()
         
     def _load_from_file(self):
         try:
