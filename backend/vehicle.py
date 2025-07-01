@@ -14,6 +14,10 @@ class Vehicle(ABC):
     def calculate_cost(self) -> float:
         pass
     
+    def get_type(self) -> str:
+        return self.__class__.__name__.replace("_", " ")
+    
+    
 """ Child class vehicle types """   
 class Motorcycle(Vehicle):
     
@@ -23,7 +27,7 @@ class Motorcycle(Vehicle):
     def calculate_cost(self, distance: float) -> float:
         total_cost = self._base_fee + (distance * self._cost_per_mile)
         return total_cost 
-
+    
 class Taxi(Vehicle):
     
     def __init__(self) -> None:
@@ -33,8 +37,9 @@ class Taxi(Vehicle):
         total_cost = self._base_fee + (distance * self._cost_per_mile) + (time * self._rate_per_minute)
         return total_cost
     
+    
 class Car(Vehicle):
-    def __init__(self, name: str) -> None:
+    def __init__(self) -> None:
         super().__init__(name="Car", base_fee=100, cost_per_mile=14, capacity=4, rate_per_minute=2, luxury_fee=0)
     
     def calculate_cost(self, distance: float, time: float = 0) -> float:
