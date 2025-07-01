@@ -1,3 +1,5 @@
+import csv
+from geopy.distance import distance as geopy_distance
 
 # Dictionary to hold street -> (latitude, longitude)
 class StreetCoordinates:
@@ -14,30 +16,19 @@ class StreetCoordinates:
                     lon = float(row['Longitude'])
                     StreetCoordinates.street_coords[street] = (lat, lon)
 
-    @staticmethod
-    def haversine(lat1, lon1, lat2, lon2):
-        R = 3958.8  # Radius of the Earth in miles
-        phi1 = math.radians(lat1)
-        phi2 = math.radians(lat2)
-        d_phi = math.radians(lat2 - lat1)
-        d_lambda = math.radians(lon2 - lon1)
-
-        a = math.sin(d_phi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(d_lambda / 2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-        return R * c
-
     @classmethod
     def calculate_distance(cls, street1, street2):
         if street1 not in cls.street_coords or street2 not in cls.street_coords:
             raise ValueError("One or both streets not found in the data.")
         
-        lat1, lon1 = cls.street_coords[street1]
-        lat2, lon2 = cls.street_coords[street2]
-        return cls.haversine(lat1, lon1, lat2, lon2)
+        coord1 = cls.street_coords[street1]
+        coord2 = cls.street_coords[street2]
+        return geopy_distance(coord1, coord2).miles
 
 # Example usage,
 # delete for integration
-distnace = StreetCoordinates()  # Initialize once to load data
-mile = distnace.calculate_distance("Pureza Street", "32nd Street")
+distance_instance = StreetCoordinates()  # Initialize once to load data
+mile = distance_instance.calculate_distance("Pureza Street", "32nd Street")
 print(f"Distance: {mile:.2f} miles")
+# Delete the example usage for integration into a larger application
+
