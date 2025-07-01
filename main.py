@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from geopy.geocoders import Nominatim
 from tkintermapview import TkinterMapView
 from backend.booking_system import BookingSystem
 from backend.distance import StreetCoordinates
@@ -28,6 +29,8 @@ class RideApp(ctk.CTk):
         self.start_marker = None
         self.end_marker = None
         self.manage_visible = False
+        self.geolocator = Nominatim(user_agent="ride_booking_app")
+
 
         self.login_ui()
 
@@ -134,33 +137,66 @@ class RideApp(ctk.CTk):
         self.manage_frame.grid_columnconfigure(2, weight=2)
         self.manage_frame.grid_remove()
         
+    def get_location_name(self, lat, lon):
+        try:
+            location = self.geolocator.reverse((lat, lon), exactly_one=True, language='en')
+            if location and location.raw and "address" in location.raw:
+                address = location.raw["address"]
+                # Choose the most general fields you want to include
+                city = address.get("city") or address.get("town") or address.get("village") or address.get("hamlet")
+                barangay = address.get("neighbourhood") or address.get("suburb")
+                province = address.get("state")
+                country = address.get("country")
+                
+                parts = [part for part in [barangay, city, province, country] if part]
+                return ", ".join(parts)
+            else:
+                return f"{lat:.5f}, {lon:.5f}"
+        except Exception as e:
+            print(f"[Reverse Geocode Error] {e}")
+            return f"{lat:.5f}, {lon:.5f}"
+
     def handle_map_click(self, coords):
         lat, lon = coords
 
         if self.click_count % 2 == 0:
+            # New start point
             self.clicked_start_coord = (lat, lon)
+            print(f"[🟢 Start] Lat: {lat}, Lon: {lon}")  # 👈 Print start coordinates
+
             if self.start_marker:
                 self.start_marker.delete()
+            self.start_marker = self.map_widget.set_marker(lat, lon, text="Start")
+            start_name = self.get_location_name(lat, lon)
+            self.start_label.configure(text=f"🟢 Start: {start_name}")
+
+
+            # Clear old end marker and route
             if self.end_marker:
                 self.end_marker.delete()
+                self.end_marker = None
             if self.route_path:
                 self.route_path.delete()
                 self.route_path = None
 
-            self.start_marker = self.map_widget.set_marker(lat, lon, text="Start")
-            self.start_label.configure(text=f"🟢 Start: {lat:.5f}, {lon:.5f}")
         else:
+            # New end point
             self.clicked_end_coord = (lat, lon)
-            if self.end_marker:
-                self.end_marker.set_position(lat, lon)
-            else:
-                self.end_marker = self.map_widget.set_marker(lat, lon, text="End")
-            self.end_label.configure(text=f"🔴 End: {lat:.5f}, {lon:.5f}")
+            print(f"[🔴 End] Lat: {lat}, Lon: {lon}")  # 👈 Print end coordinates
 
-            self.route_path = self.map_widget.set_path([self.clicked_start_coord, self.clicked_end_coord])
-            self.update_estimates_from_clicks()
+            if self.end_marker:
+                self.end_marker.delete()
+            self.end_marker = self.map_widget.set_marker(lat, lon, text="End")
+            end_name = self.get_location_name(lat, lon)
+            self.end_label.configure(text=f"🔴 End: {end_name}")
+            
+            # Draw route and update estimate
+            if self.clicked_start_coord:
+                self.route_path = self.map_widget.set_path([self.clicked_start_coord, self.clicked_end_coord])
+                self.update_estimates_from_clicks()
 
         self.click_count += 1
+
 
     def update_estimates_from_clicks(self):
         if not (self.clicked_start_coord and self.clicked_end_coord):
