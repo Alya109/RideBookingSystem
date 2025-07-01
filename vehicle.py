@@ -35,8 +35,8 @@ class Taxi(Vehicle):
 
 class Car(Vehicle):
     
-    def __init__(self):
-        pass
+    def __init__(self, name: str) -> None:
+        super().__init__(name, base_fee=100, cost_per_mile=14, capacity=4, rate_per_minute=2, luxury_fee=0)
     
     def calculate_cost(self, distance: float, time: float = 0) -> float:
         rate_per_minute = self._rate_per_minute
@@ -76,5 +76,4 @@ class Van(Vehicle):
 sedan = Car("Sedan")
 
 print(sedan.name)
-print(sedan.cost_calculation(10))  # Example distance of 10 miles
-print(sedan.capacity())  # Should print 4, the capacity of the car
+print(sedan.calculate_cost(10)) 
