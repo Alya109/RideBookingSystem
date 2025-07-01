@@ -224,7 +224,7 @@ class RideApp(ctk.CTk):
             self.load_bookings()
         except ValueError:
             self.cancel_result.configure(text="Invalid booking ID.")
-
+   
     def clear_widgets(self):
         for widget in self.winfo_children():
             widget.destroy()

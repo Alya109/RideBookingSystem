@@ -6,5 +6,7 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1005,Cancelled,Guest,Electric Car,32nd Street,Pureza Street,07-01-2025,5.408767872162915,P 193.72
 1006,Cancelled,Guest,Van,32nd Street,Pureza Street,07-01-2025,5.408767872162915,P 239.54
 1007,Cancelled,Alya,Car,32nd Street,McArthur Highway,07-01-2025,40.98085733509395,P 797.73
-1008,Active,123132,Motorcycle,32nd Street,Sumulong Highway,07-01-2025,7.33,P 133.29
+1008,Cancelled,123132,Motorcycle,32nd Street,Sumulong Highway,07-01-2025,7.33,P 133.29
 1009,Active,Iadwladw,Car,32nd Street,Carlos P. Garcia Avenue,07-01-2025,8.27,P 243.82
+1010,Cancelled,Earl,Motorcycle,Sumulong Highway,Pureza Street,07-01-2025,9.73,P 157.26
+1011,Cancelled,Hdwadda,Car,Carlos P. Garcia Avenue,McArthur Highway,07-02-2025,32.73,P 662.24
