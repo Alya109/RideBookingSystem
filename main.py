@@ -1,2 +1,2 @@
-from gui.ui import UI_Mainwindow
+from ui import UI_Mainwindow
 

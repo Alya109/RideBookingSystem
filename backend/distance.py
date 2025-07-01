@@ -25,10 +25,5 @@ class StreetCoordinates:
         coord2 = cls.street_coords[street2]
         return geopy_distance(coord1, coord2).miles
 
-# # Example usage,
-# # delete for integration
-# distance_instance = StreetCoordinates()  # Initialize once to load data
-# mile = distance_instance.calculate_distance("Pureza Street", "32nd Street")
-# print(f"Distance: {mile:.2f} miles")
-# # Delete the example usage for integration into a larger application
+
 
