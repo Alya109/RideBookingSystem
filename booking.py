@@ -1,6 +1,7 @@
 import datetime
 from vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
 from distance import calculate_distance
+from timesimulation import simulate_time
 
 class Booking:
     booking_id_counter = 1000
@@ -16,11 +17,24 @@ class Booking:
         self.end_loc = end_loc
         self.date = datetime.datetime.now().strftime("%m-%d-%Y")
         self.distance = # distance calculation logic here
-        self.time = # time calculation logic here
+        self.time = simulate_time(self.distance, vehicle_type)
         
         vehicle = self.get_vehicle()
         self.total_cost = vehicle.calculate_cost()
         
     def cancel_booking(self):
         self.status = "Cancelled"
-        
+    
+    def to_dict(self):
+        return {
+            "Booking ID": self.booking_id,
+            "Status": self.status,
+            "User": self.user,
+            "Vehicle Type": self.vehicle_type,
+            "From": self.start,
+            "To": self.end,
+            "Date": self.date,
+            "Distance": self.distance,
+            "Travel time: ": f"{self.time} minutes",
+            "Total Cost": f"P {self.total_cost}"
+        }    
