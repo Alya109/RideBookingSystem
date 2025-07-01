@@ -1,5 +1,3 @@
-import csv
-import math
 
 # Dictionary to hold street -> (latitude, longitude)
 class StreetCoordinates:
@@ -40,7 +38,6 @@ class StreetCoordinates:
 
 # Example usage,
 # delete for integration
-StreetCoordinates()  # Initialize once to load data
-distance = StreetCoordinates.calculate_distance("Kalayaan Avenue", "32nd Street")
-print(f"Distance: {distance:.2f} miles")
-
+distnace = StreetCoordinates()  # Initialize once to load data
+mile = distnace.calculate_distance("Pureza Street", "32nd Street")
+print(f"Distance: {mile:.2f} miles")
