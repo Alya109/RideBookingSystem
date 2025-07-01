@@ -1,6 +1,6 @@
 import datetime
-from distance import StreetCoordinates
-from timesimulation import simulate_time
+from backend.distance import StreetCoordinates
+from backend.timesimulation import simulate_time
 
 class Booking:
     booking_id_counter = 1000

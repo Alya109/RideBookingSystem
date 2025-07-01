@@ -1,5 +1,5 @@
 # main.py
-from booking_system import BookingSystem
+from backend.booking_system import BookingSystem
 
 def main():
     system = BookingSystem()
