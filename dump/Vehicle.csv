@@ -1,0 +1,18 @@
+Vehicle,Name,Cost,Fuel_Cost,LuxuryTax,Capacity
+Motorcycle,Yamaha Mio,85000,50,0,2
+Motorcycle,Honda Click 125i,98000,55,0,2
+Motorcycle,Kawasaki Rouser NS160,115000,70,0,2
+Motorcycle,Suzuki Raider R150,97000,60,0,2
+Van,Toyota Hiace,1500000,250,50000,12
+Van,Nissan Urvan,1400000,240,45000,10
+Van,Ford Transit,1800000,280,60000,15
+Van,Hyundai Starex,1600000,260,55000,11
+Bike,Mountain Bike,15000,0,0,1
+Bike,Road Bike,25000,0,0,1
+Bike,Folding Bike,18000,0,0,1
+Bike,E-bike Commuter,35000,5,0,1
+Car,Honda Civic,1200000,180,30000,5
+Car,Toyota Vios,850000,160,15000,5
+Car,Mitsubishi Mirage G4,900000,155,18000,5
+Car,Toyota Fortuner,2000000,250,80000,7
+Car,Ford Everest,2200000,270,85000,7
