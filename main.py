@@ -6,8 +6,8 @@ from backend.distance import StreetCoordinates
 from backend.timesimulation import simulate_time
 from backend.vehicle import Motorcycle, Taxi, Car, ElectricCar, Van
 
-ctk.set_appearance_mode("white")
-ctk.set_default_color_theme("blue")
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("assets/themes/purple_theme.json")
 
 class RideApp(ctk.CTk):
     def __init__(self):
