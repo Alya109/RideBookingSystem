@@ -37,43 +37,61 @@ class RideApp(ctk.CTk):
     def login_ui(self):
         self.clear_widgets()
 
-        # Background using theme
-        self.login_frame = ctk.CTkFrame(self)
+        # Light purple background
+        self.login_frame = ctk.CTkFrame(self, fg_color="#dcc7e3")
         self.login_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        # Centered login panel
+        # Rounded dark card in center
         self.bg_panel = ctk.CTkFrame(
             self.login_frame,
-            width=480,
-            height=360
+            width=460,
+            height=420,
+            fg_color="#2d2d2d",
+            corner_radius=20
         )
         self.bg_panel.place(relx=0.5, rely=0.5, anchor="center")
         self.bg_panel.grid_columnconfigure(0, weight=1)
 
-        # Title
+        # Title Label
         ctk.CTkLabel(
             self.bg_panel,
-            text="Welcome to Sadride!",
-            font=ctk.CTkFont(family="Georgia", size=30, weight="bold"),
-        ).grid(row=0, column=0, pady=(30, 15), padx=20, sticky="n")
+            text="Sadride",
+            font=ctk.CTkFont(family="Georgia", size=38, weight="bold"),
+            text_color="#ffffff"
+        ).grid(row=0, column=0, pady=(40, 10), padx=20)
 
-        # Username input
+        # Subtitle
+        ctk.CTkLabel(
+            self.bg_panel,
+            text="Safe and Dry Ride.\nBook your ride now!",
+            font=ctk.CTkFont(size=16),
+            text_color="#cccccc"
+        ).grid(row=1, column=0, pady=(0, 30), padx=20)
+
+        # Username Entry
         self.name_entry = ctk.CTkEntry(
             self.bg_panel,
-            placeholder_text="Enter your name",
+            placeholder_text="Enter username",
             font=ctk.CTkFont(size=18),
-            height=45
+            width=260,
+            height=50,
+            corner_radius=8
         )
-        self.name_entry.grid(row=1, column=0, padx=40, pady=(0, 20), sticky="ew")
+        self.name_entry.grid(row=2, column=0, pady=(0, 20), padx=40)
 
-        # Login button
+        # Login Button
         ctk.CTkButton(
             self.bg_panel,
             text="Log In",
-            font=ctk.CTkFont(size=18),
-            height=40,
+            font=ctk.CTkFont(size=18, weight="bold"),
+            width=220,
+            height=45,
+            corner_radius=8,
+            fg_color="#b278ff",
+            hover_color="#a162e6",
+            text_color="white",
             command=self.handle_login
-        ).grid(row=2, column=0, padx=80, pady=(0, 25), sticky="ew")
+        ).grid(row=3, column=0, pady=(0, 30))
 
     def handle_login(self):
         name = self.name_entry.get().strip()
