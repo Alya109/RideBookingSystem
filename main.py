@@ -77,7 +77,16 @@ class RideApp(ctk.CTk):
             height=50,
             corner_radius=8
         )
-        self.name_entry.grid(row=2, column=0, pady=(0, 20), padx=40)
+        self.name_entry.grid(row=2, column=0, pady=(0, 10), padx=40)
+
+        # Warning Label (initially empty)
+        self.warning_label = ctk.CTkLabel(
+            self.bg_panel,
+            text="",
+            font=ctk.CTkFont(size=13),
+            text_color="red"
+        )
+        self.warning_label.grid(row=3, column=0, pady=(0, 10))
 
         # Login Button
         ctk.CTkButton(
@@ -91,13 +100,16 @@ class RideApp(ctk.CTk):
             hover_color="#a162e6",
             text_color="white",
             command=self.handle_login
-        ).grid(row=3, column=0, pady=(0, 30))
+        ).grid(row=4, column=0, pady=(0, 30))
 
     def handle_login(self):
-        name = self.name_entry.get().strip()
-        if not name:
+        username = self.name_entry.get().strip()
+        if not username:
+            self.warning_label.configure(text="Please enter a username.")
             return
-        self.username = name
+
+        self.warning_label.configure(text="")  # Clear warning
+        self.username = username
         self.main_ui()
         
     def logout(self):

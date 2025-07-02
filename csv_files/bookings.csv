@@ -35,3 +35,6 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1034,Cancelled,Alya,Motorcycle,"Santo Domingo, Quezon City, Philippines","Barangay 905, Manila, Philippines",07-02-2025,2.74,P 87.40
 1035,Cancelled,Alya,Motorcycle,"Ruby Ville 2, Valenzuela, Philippines","Legazpi, Makati, Philippines",07-02-2025,10.72,P 167.18
 1036,Active,Orencchi,Electric Car,"Diliman, Quezon City, Philippines","Sampaloc, Manila, Philippines",07-02-2025,4.28,P 175.87
+1037,Cancelled,Alya,Motorcycle,"Barangay 73, Caloocan, Philippines","Minuyan Proper, San Jose del Monte, Bulacan, Philippines",07-02-2025,14.53,P 205.34
+1038,Active,Alya,Car,"Libis Baesa/Reparo, Caloocan, Philippines","Barangay 584, Manila, Philippines",07-02-2025,5.19,P 190.70
+1039,Cancelled,Alya,Motorcycle,"Quezon City, Philippines","Paliparan Subdivision, Marikina, Philippines",07-02-2025,5.06,P 110.55
