@@ -32,4 +32,4 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1031,Active,Megumi,Motorcycle,"Project 4, Quezon City, Philippines","Taguig, Philippines",07-02-2025,6.55,P 125.48
 1032,Cancelled,Alya,Motorcycle,"Barangay 154, Caloocan, Philippines","Salcedo, Makati, Philippines",07-02-2025,7.66,P 136.62
 1033,Cancelled,Ichika,Motorcycle,"San Mateo, Rizal, Philippines","New Marikina Subdivision, Marikina, Philippines",07-02-2025,4.45,P 104.50
-1034,Active,Alya,Motorcycle,"Santo Domingo, Quezon City, Philippines","Barangay 905, Manila, Philippines",07-02-2025,2.74,P 87.40
+1034,Cancelled,Alya,Motorcycle,"Santo Domingo, Quezon City, Philippines","Barangay 905, Manila, Philippines",07-02-2025,2.74,P 87.40

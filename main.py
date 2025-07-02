@@ -36,16 +36,47 @@ class RideApp(ctk.CTk):
 
     def login_ui(self):
         self.clear_widgets()
-        self.login_frame = ctk.CTkFrame(self)
-        self.login_frame.grid(row=0, column=0, sticky="nsew")
-        self.login_frame.grid_rowconfigure((0, 1, 2), weight=1)
-        self.login_frame.grid_columnconfigure(0, weight=1)
+        # Background here
+        self.login_frame = ctk.CTkFrame(self, fg_color="#FFFBE4")
+        self.login_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        ctk.CTkLabel(self.login_frame, text="Enter your name to continue", font=ctk.CTkFont(size=18)).grid(row=0, column=0, pady=20)
-        self.name_entry = ctk.CTkEntry(self.login_frame, placeholder_text="Username")
-        self.name_entry.grid(row=1, column=0, pady=10)
-        ctk.CTkButton(self.login_frame, text="Sign In", command=self.handle_login).grid(row=2, column=0, pady=10)
+        # Dark rounded login panel
+        self.bg_panel = ctk.CTkFrame(
+            self.login_frame,
+            width=600,
+            height=1200,
+            fg_color="#2b2b2b",
+            corner_radius=0
+        )
+        self.bg_panel.place(x=600, y=0)
 
+        # Now all widgets go INSIDE the dark panel
+        ctk.CTkLabel(
+            self.bg_panel,
+            text="Welcome to Sadride!",
+            font=ctk.CTkFont(family="Georgia", size=35)
+        ).place(x=94, y=120)
+
+        self.name_entry = ctk.CTkEntry(
+            self.bg_panel,
+            placeholder_text="Username",
+            font=ctk.CTkFont(size=25),
+            width=350,
+            height=80,
+            corner_radius=5
+        )
+        self.name_entry.place(x=80, y=180)
+
+        ctk.CTkButton(
+            self.bg_panel,
+            text="Log In",
+            font=ctk.CTkFont(size=25),
+            width=220,
+            height=50,
+            corner_radius=5,
+            command=self.handle_login
+        ).place(x=145, y=280)
+        
     def handle_login(self):
         name = self.name_entry.get().strip()
         if not name:
