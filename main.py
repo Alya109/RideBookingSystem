@@ -30,7 +30,7 @@ class RideApp(ctk.CTk):
         self.end_marker = None
         self.manage_visible = False
         self.geolocator = Nominatim(user_agent="ride_booking_app")
-
+    
 
         self.login_ui()
 
@@ -243,13 +243,6 @@ class RideApp(ctk.CTk):
         for widget in self.manage_frame.winfo_children():
             widget.destroy()
 
-        # Header
-        headers = ["Booking ID", "Status", "User", "Vehicle Type", "From", "To", "Date", "Distance", "Total Cost"]
-        header_font = ctk.CTkFont(size=13, weight="bold")
-        for col, header in enumerate(headers):
-            label = ctk.CTkLabel(self.manage_frame, text=header, font=header_font, padx=5)
-            label.grid(row=0, column=col, sticky="nsew", padx=3, pady=3)
-
         # Filter bookings for current user only
         df = self.system.view_bookings()
         df = df[df["User"] == self.username]
@@ -257,8 +250,15 @@ class RideApp(ctk.CTk):
         if df.empty:
             # Show message if no bookings
             no_booking_label = ctk.CTkLabel(self.manage_frame, text="📭 No bookings yet.", font=ctk.CTkFont(size=14))
-            no_booking_label.grid(row=1, column=0, columnspan=len(headers), padx=10, pady=20, sticky="w")
+            no_booking_label.grid(row=0, column=0, padx=10, pady=20, sticky="w")
             return
+
+        # Header (only shown if there are bookings)
+        headers = ["Booking ID", "Status", "User", "Vehicle Type", "From", "To", "Date", "Distance", "Total Cost"]
+        header_font = ctk.CTkFont(size=13, weight="bold")
+        for col, header in enumerate(headers):
+            label = ctk.CTkLabel(self.manage_frame, text=header, font=header_font, padx=5)
+            label.grid(row=0, column=col, sticky="nsew", padx=3, pady=3)
 
         # Render user bookings
         for i, (_, row) in enumerate(df.iterrows(), start=1):

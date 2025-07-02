@@ -22,3 +22,4 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1021,Cancelled,Alya,Van,"Balintawak, Quezon City, Philippines","Salcedo, Makati, Philippines",07-02-2025,6.72,P 263.46
 1022,Active,nega,Motorcycle,"Barangay 128, Manila, Philippines","Makati, Philippines",07-02-2025,7.55,P 135.47
 1023,Active,alya,Motorcycle,"Diliman, Quezon City, Philippines","Mandaluyong, Philippines",07-02-2025,4.95,P 109.49
+1024,Cancelled,Alya,Car,"Araneta University Village, Malabon, Philippines","San Juan, Philippines",07-02-2025,5.04,P 184.58
