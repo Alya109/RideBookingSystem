@@ -250,9 +250,17 @@ class RideApp(ctk.CTk):
             label = ctk.CTkLabel(self.manage_frame, text=header, font=header_font, padx=5)
             label.grid(row=0, column=col, sticky="nsew", padx=3, pady=3)
 
-        # Rows
+        # Filter bookings for current user only
         df = self.system.view_bookings()
+        df = df[df["User"] == self.username]
 
+        if df.empty:
+            # Show message if no bookings
+            no_booking_label = ctk.CTkLabel(self.manage_frame, text="📭 No bookings yet.", font=ctk.CTkFont(size=14))
+            no_booking_label.grid(row=1, column=0, columnspan=len(headers), padx=10, pady=20, sticky="w")
+            return
+
+        # Render user bookings
         for i, (_, row) in enumerate(df.iterrows(), start=1):
             for j, col in enumerate(headers):
                 val = row.get(col, "")
@@ -263,10 +271,9 @@ class RideApp(ctk.CTk):
                     text=str(val),
                     padx=8,
                     anchor="w",
-                    wraplength=150,  # Smaller to allow more columns to fit
+                    wraplength=150,
                     font=ctk.CTkFont(size=12)
                 )
-
                 label.grid(row=i, column=j, sticky="nsew", padx=3, pady=3)
                 self.manage_frame.grid_columnconfigure(j, weight=1)
 
@@ -341,16 +348,39 @@ class RideApp(ctk.CTk):
                 
     def cancel_booking(self):
         try:
+            if not hasattr(self, "cancel_entry") or not self.cancel_entry:
+                return  # Cancel UI not visible or not initialized
+
             booking_id = int(self.cancel_entry.get())
+            df = self.system.view_bookings()
+
+            # Find matching booking
+            booking_row = df[df["Booking ID"] == booking_id]
+
+            if booking_row.empty:
+                if self.cancel_result:
+                    self.cancel_result.configure(text="❌ Booking ID not found.")
+                return
+
+            if booking_row.iloc[0]["User"] != self.username:
+                if self.cancel_result:
+                    self.cancel_result.configure(text="❌ Booking ID not found.")
+                return
+
+            # Proceed to cancel
             result = self.system.cancel_booking(booking_id)
-            self.cancel_result.configure(text=result)
+            if self.cancel_result:
+                self.cancel_result.configure(text=result)
             self.cancel_entry.delete(0, 'end')
             self.load_bookings()
             self.show_toast(result)
+
         except ValueError:
-            self.cancel_result.configure(text="❌ Invalid booking ID.")
+            if self.cancel_result:
+                self.cancel_result.configure(text="❌ Invalid booking ID.")
         except Exception as e:
-            self.cancel_result.configure(text=f"❌ Error: {str(e)}")
+            if self.cancel_result:
+                self.cancel_result.configure(text=f"❌ Error: {str(e)}")
 
     def show_toast(self, message, duration=2000):
         toast = ctk.CTkLabel(self, text=message, fg_color="#323232", text_color="white", corner_radius=10, font=ctk.CTkFont(size=14))
