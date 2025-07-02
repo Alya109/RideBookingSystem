@@ -94,6 +94,37 @@ class RideApp(ctk.CTk):
 
         self.setup_booking_ui()
 
+        # --- Bottom-right cancel container ---
+        self.cancel_container = ctk.CTkFrame(self.main_frame, fg_color="transparent")
+        self.cancel_container.grid(row=2, column=0, sticky="e", padx=10, pady=5)
+
+        self.cancel_entry = ctk.CTkEntry(self.cancel_container, placeholder_text="Enter Booking ID to cancel", width=200)
+        self.cancel_entry.pack(side="left", padx=5)
+
+        cancel_btn = ctk.CTkButton(
+            self.cancel_container,
+            text="Cancel Booking",
+            command=self.cancel_booking,
+            fg_color="#6A0DAD",
+            hover_color="#5A0CAD",
+            text_color="white",
+            corner_radius=8
+        )
+        cancel_btn.pack(side="left", padx=5)
+
+        self.cancel_result = ctk.CTkLabel(
+            self.cancel_container,
+            text="",
+            text_color="white",
+            anchor="w",
+            width=300  # Optional: force space for text to align left
+        )
+        self.cancel_result.pack(side="left", padx=5)
+
+        # Hide initially
+        self.cancel_container.grid_remove()
+
+                
     def setup_booking_ui(self):
         # Configure grid layout for responsiveness
         self.book_frame.grid_rowconfigure(1, weight=1)
@@ -198,12 +229,15 @@ class RideApp(ctk.CTk):
     def switch_tab(self, selected):
         if selected == "Book Ride":
             self.manage_frame.grid_remove()
+            self.cancel_container.grid_remove()  # ✔ hide cancel section
             self.book_frame.grid()
+            self.manage_visible = False
         else:
             self.book_frame.grid_remove()
             self.manage_frame.grid()
+            self.cancel_container.grid()         # ✔ show cancel section
+            self.manage_visible = True
             self.load_bookings()
-
 
             
     def get_location_name(self, lat, lon):
@@ -331,19 +365,6 @@ class RideApp(ctk.CTk):
                 )
                 label.grid(row=i, column=j, sticky="nsew", padx=3, pady=3)
                 self.manage_frame.grid_columnconfigure(j, weight=1)
-
-        # Cancel Booking Section
-        cancel_frame = ctk.CTkFrame(self.manage_frame, fg_color="transparent")
-        cancel_frame.grid(row=1000, column=0, columnspan=len(headers), sticky="w", pady=10)
-
-        self.cancel_entry = ctk.CTkEntry(cancel_frame, placeholder_text="Enter Booking ID to cancel", width=200)
-        self.cancel_entry.pack(side="left", padx=5)
-
-        cancel_btn = ctk.CTkButton(cancel_frame, text="Cancel Booking", command=self.cancel_booking)
-        cancel_btn.pack(side="left", padx=5)
-
-        self.cancel_result = ctk.CTkLabel(self.manage_frame, text="")
-        self.cancel_result.grid(row=1001, column=0, columnspan=len(headers), sticky="w", padx=5)
 
     def book_ride(self):
         if not self.clicked_start_coord or not self.clicked_end_coord:
