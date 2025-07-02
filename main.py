@@ -36,47 +36,45 @@ class RideApp(ctk.CTk):
 
     def login_ui(self):
         self.clear_widgets()
-        # Background here
-        self.login_frame = ctk.CTkFrame(self, fg_color="#FFFBE4")
+
+        # Background using theme
+        self.login_frame = ctk.CTkFrame(self)
         self.login_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        # Dark rounded login panel
+        # Centered login panel
         self.bg_panel = ctk.CTkFrame(
             self.login_frame,
-            width=600,
-            height=1200,
-            fg_color="#2b2b2b",
-            corner_radius=0
+            width=480,
+            height=360
         )
-        self.bg_panel.place(x=600, y=0)
+        self.bg_panel.place(relx=0.5, rely=0.5, anchor="center")
+        self.bg_panel.grid_columnconfigure(0, weight=1)
 
-        # Now all widgets go INSIDE the dark panel
+        # Title
         ctk.CTkLabel(
             self.bg_panel,
             text="Welcome to Sadride!",
-            font=ctk.CTkFont(family="Georgia", size=35)
-        ).place(x=94, y=120)
+            font=ctk.CTkFont(family="Georgia", size=30, weight="bold"),
+        ).grid(row=0, column=0, pady=(30, 15), padx=20, sticky="n")
 
+        # Username input
         self.name_entry = ctk.CTkEntry(
             self.bg_panel,
-            placeholder_text="Username",
-            font=ctk.CTkFont(size=25),
-            width=350,
-            height=80,
-            corner_radius=5
+            placeholder_text="Enter your name",
+            font=ctk.CTkFont(size=18),
+            height=45
         )
-        self.name_entry.place(x=80, y=180)
+        self.name_entry.grid(row=1, column=0, padx=40, pady=(0, 20), sticky="ew")
 
+        # Login button
         ctk.CTkButton(
             self.bg_panel,
             text="Log In",
-            font=ctk.CTkFont(size=25),
-            width=220,
-            height=50,
-            corner_radius=5,
+            font=ctk.CTkFont(size=18),
+            height=40,
             command=self.handle_login
-        ).place(x=145, y=280)
-        
+        ).grid(row=2, column=0, padx=80, pady=(0, 25), sticky="ew")
+
     def handle_login(self):
         name = self.name_entry.get().strip()
         if not name:
@@ -100,7 +98,7 @@ class RideApp(ctk.CTk):
         self.clear_widgets()
 
         # Outer layout container
-        self.main_frame = ctk.CTkFrame(self)
+        self.main_frame = ctk.CTkFrame(self, fg_color="#f7f1ff")
         self.main_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
         self.main_frame.grid_rowconfigure(1, weight=1)
         self.main_frame.grid_columnconfigure(0, weight=1)
@@ -115,11 +113,11 @@ class RideApp(ctk.CTk):
         self.tab_control.grid(row=0, column=0, sticky="ew", pady=(0, 10))
 
         # Booking frame
-        self.book_frame = ctk.CTkFrame(self.main_frame)
+        self.book_frame = ctk.CTkFrame(self.main_frame, fg_color="#f5e9ff")
         self.book_frame.grid(row=1, column=0, sticky="nsew")
         
         # Manage bookings frame (hidden initially)
-        self.manage_frame = ctk.CTkScrollableFrame(self.main_frame)
+        self.manage_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="#f3dbfb")
         self.manage_frame.grid(row=1, column=0, sticky="nsew")
         self.manage_frame.grid_remove()
 
@@ -178,10 +176,10 @@ class RideApp(ctk.CTk):
             height=28,
             command=self.logout,
             fg_color="transparent",
-            hover_color="#6A0DAD",
+            hover_color="#b278ff",
             border_width=1,
-            border_color="#6A0DAD",
-            text_color="white",
+            border_color="#6C0DAF",
+            text_color="black",
             corner_radius=8
         )
         logout_btn.grid(row=0, column=1, sticky="e", padx=(10, 0))
