@@ -52,58 +52,97 @@ class RideApp(ctk.CTk):
             return
         self.username = name
         self.main_ui()
+        
+    def logout(self):
+        self.username = ""
+        self.clicked_start_coord = None
+        self.clicked_end_coord = None
+        self.route_path = None
+        self.start_marker = None
+        self.end_marker = None
+        self.map_widget = None
+        self.vehicle_type = "Car"
+        self.login_ui()
 
+    
     def main_ui(self):
         self.clear_widgets()
 
+        # Outer layout container
         self.main_frame = ctk.CTkFrame(self)
         self.main_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
-        self.main_frame.grid_columnconfigure(0, weight=3)
-        self.main_frame.grid_columnconfigure(1, weight=2)
-        self.main_frame.grid_rowconfigure(0, weight=0)
         self.main_frame.grid_rowconfigure(1, weight=1)
-        self.main_frame.grid_rowconfigure(2, weight=2)
+        self.main_frame.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(self.main_frame, text=f"Welcome, {self.username}", font=ctk.CTkFont(size=20)).grid(row=0, column=0, pady=(10, 5), padx=10, sticky="w")
+        # Tab switcher (top)
+        self.tab_control = ctk.CTkSegmentedButton(
+            self.main_frame,
+            values=["Book Ride", "Manage Bookings"],
+            command=self.switch_tab
+        )
+        self.tab_control.set("Book Ride")
+        self.tab_control.grid(row=0, column=0, sticky="ew", pady=(0, 10))
 
-        self.map_widget = TkinterMapView(self.main_frame, corner_radius=10, height=400)
-        self.map_widget.grid(row=1, column=0, sticky="new", padx=10, pady=(0, 10))
+        # Booking frame
+        self.book_frame = ctk.CTkFrame(self.main_frame)
+        self.book_frame.grid(row=1, column=0, sticky="nsew")
+        
+        # Manage bookings frame (hidden initially)
+        self.manage_frame = ctk.CTkScrollableFrame(self.main_frame)
+        self.manage_frame.grid(row=1, column=0, sticky="nsew")
+        self.manage_frame.grid_remove()
+
+        self.setup_booking_ui()
+
+    def setup_booking_ui(self):
+        # Configure grid layout for responsiveness
+        self.book_frame.grid_rowconfigure(1, weight=1)
+        self.book_frame.grid_columnconfigure((0, 1), weight=1)
+
+        # Header frame for welcome + logout
+        header_frame = ctk.CTkFrame(self.book_frame, fg_color="transparent")
+        header_frame.grid(row=0, column=0, columnspan=2, sticky="ew", padx=10, pady=(10, 5))
+        header_frame.grid_columnconfigure(0, weight=1)  # Allow welcome label to expand
+
+        # Welcome label
+        welcome_label = ctk.CTkLabel(header_frame, text=f"Welcome, {self.username}", font=ctk.CTkFont(size=20))
+        welcome_label.grid(row=0, column=0, sticky="w")
+
+        # Logout button
+        logout_btn = ctk.CTkButton(header_frame, text="Logout", width=80, height=28, fg_color="gray20", text_color="white",
+                                command=self.logout, corner_radius=8)
+        logout_btn.grid(row=0, column=1, sticky="e", padx=(10, 0))
+
+        # Map widget (left side)
+        self.map_widget = TkinterMapView(self.book_frame, corner_radius=10)
+        self.map_widget.grid(row=1, column=0, sticky="nsew", padx=(10, 5), pady=(0, 10))
         self.map_widget.set_position(14.5995, 120.9842)
         self.map_widget.set_zoom(12)
         self.map_widget.add_left_click_map_command(self.handle_map_click)
+
+        # Route data tracking
         self.click_count = 0
         self.clicked_start_coord = None
         self.clicked_end_coord = None
         self.route_path = None
 
-        self.right_panel = ctk.CTkFrame(self.main_frame, corner_radius=10)
-        self.right_panel.grid(row=1, column=1, sticky="nsew", padx=10, pady=(0, 10))
-
-        for i in range(10):
-            self.right_panel.grid_rowconfigure(i, weight=0)
-        self.right_panel.grid_rowconfigure(9, weight=1)
+        # Right panel (info and controls)
+        self.right_panel = ctk.CTkFrame(self.book_frame, corner_radius=10, border_width=1, border_color="#444")
+        self.right_panel.grid(row=1, column=1, sticky="nsew", padx=(5, 10), pady=(0, 10))
+        self.right_panel.grid_rowconfigure(99, weight=1)  # for spacing
         self.right_panel.grid_columnconfigure(0, weight=1)
 
         self.start_label = ctk.CTkLabel(
-            self.right_panel,
-            text="🟢 Start: not set",
-            width=250,               # Fixed width
-            anchor="w",              # Left align
-            wraplength=0,            # Disable wrapping
-            font=ctk.CTkFont(size=13)
+            self.right_panel, text="🟢 Start: not set", anchor="w", font=ctk.CTkFont(size=13)
         )
         self.start_label.grid(row=0, column=0, padx=10, pady=(10, 5), sticky="w")
 
         self.end_label = ctk.CTkLabel(
-            self.right_panel,
-            text="🔴 End: not set",
-            width=250,
-            anchor="w",
-            wraplength=0,
-            font=ctk.CTkFont(size=13)
+            self.right_panel, text="🔴 End: not set", anchor="w", font=ctk.CTkFont(size=13)
         )
         self.end_label.grid(row=1, column=0, padx=10, pady=(0, 10), sticky="w")
-        
+
+        # Vehicle selection buttons
         vehicle_frame = ctk.CTkFrame(self.right_panel, fg_color="transparent")
         vehicle_frame.grid(row=2, column=0, padx=10, pady=5, sticky="ew")
         vehicle_frame.grid_columnconfigure((0, 1), weight=1)
@@ -118,39 +157,44 @@ class RideApp(ctk.CTk):
                     fg_color="#6A0DAD" if v_type == vehicle else "transparent",
                     text_color="white" if v_type == vehicle else "black"
                 )
-            
-            # Immediately update cost and ETA if start and end points are set
             if self.clicked_start_coord and self.clicked_end_coord:
                 self.update_estimates_from_clicks()
-
 
         for i, vehicle in enumerate(vehicle_types):
             row = i // 2
             col = i % 2
-            btn = ctk.CTkButton(vehicle_frame, text=vehicle, command=lambda v=vehicle: set_vehicle_type(v),
-                                fg_color="transparent", text_color="black", border_width=1, border_color="#6A0DAD")
+            btn = ctk.CTkButton(
+                vehicle_frame, text=vehicle, command=lambda v=vehicle: set_vehicle_type(v),
+                fg_color="transparent", text_color="black", border_width=1, border_color="#6A0DAD"
+            )
             btn.grid(row=row, column=col, padx=5, pady=5, sticky="ew")
             self.vehicle_buttons[vehicle] = btn
 
         set_vehicle_type("Car")
 
+        # ETA and cost
         self.eta_label = ctk.CTkLabel(self.right_panel, text="🕒 ETA: --")
         self.eta_label.grid(row=3, column=0, sticky="w", padx=10, pady=(5, 0))
 
         self.price_label = ctk.CTkLabel(self.right_panel, text="💰 Total Cost: --")
         self.price_label.grid(row=4, column=0, sticky="w", padx=10, pady=(0, 10))
 
-        ctk.CTkButton(self.right_panel, text="Estimate Cost", command=self.update_estimates_from_clicks, corner_radius=20).grid(row=5, column=0, padx=10, pady=5, sticky="ew")
-        ctk.CTkButton(self.right_panel, text="Book Ride", command=self.book_ride, corner_radius=20).grid(row=5, column=0, padx=10, pady=60, sticky="ew")
+        # Book Ride button
+        ctk.CTkButton(self.right_panel, text="Book Ride", command=self.book_ride, corner_radius=20).grid(
+            row=6, column=0, padx=10, pady=10, sticky="ew"
+        )
 
-        self.manage_toggle_btn = ctk.CTkButton(self.right_panel, text="📋 Manage Bookings", command=self.toggle_manage_bookings, corner_radius=20)
-        self.manage_toggle_btn.grid(row=6, column=0, padx=10, pady=(10, 0), sticky="ew")
+    def switch_tab(self, selected):
+        if selected == "Book Ride":
+            self.manage_frame.grid_remove()
+            self.book_frame.grid()
+        else:
+            self.book_frame.grid_remove()
+            self.manage_frame.grid()
+            self.load_bookings()
 
-        self.manage_frame = ctk.CTkScrollableFrame(self.main_frame)
-        self.manage_frame.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=10, pady=(0, 10))
-        self.manage_frame.grid_columnconfigure(2, weight=2)
-        self.manage_frame.grid_remove()
-        
+
+            
     def get_location_name(self, lat, lon):
         try:
             location = self.geolocator.reverse((lat, lon), exactly_one=True, language='en')
@@ -289,18 +333,6 @@ class RideApp(ctk.CTk):
 
         self.cancel_result = ctk.CTkLabel(self.manage_frame, text="")
         self.cancel_result.grid(row=1001, column=0, columnspan=len(headers), sticky="w", padx=5)
-
-    def toggle_manage_bookings(self):
-        if self.manage_visible:
-            self.manage_frame.grid_remove()
-            self.manage_toggle_btn.configure(text="📋 Manage Bookings")
-            self.manage_visible = False
-        else:
-            self.manage_frame.grid()
-            self.manage_toggle_btn.configure(text="📋 Hide Bookings")
-            self.manage_visible = True
-            self.load_bookings()
-
 
     def book_ride(self):
         if not self.clicked_start_coord or not self.clicked_end_coord:
