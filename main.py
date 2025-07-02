@@ -136,8 +136,8 @@ class RideApp(ctk.CTk):
             self.cancel_container,
             text="Cancel Booking",
             command=self.cancel_booking,
-            fg_color="#6A0DAD",
-            hover_color="#5A0CAD",
+            # fg_color="#6A0DAD",
+            # hover_color="#5A0CAD",
             text_color="white",
             corner_radius=8
         )
@@ -227,7 +227,7 @@ class RideApp(ctk.CTk):
             self.vehicle_type = vehicle
             for v_type, btn in self.vehicle_buttons.items():
                 btn.configure(
-                    fg_color="#6A0DAD" if v_type == vehicle else "transparent",
+                    fg_color="#b278ff" if v_type == vehicle else "transparent",
                     text_color="white" if v_type == vehicle else "black"
                 )
             if self.clicked_start_coord and self.clicked_end_coord:
