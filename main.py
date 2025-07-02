@@ -109,8 +109,19 @@ class RideApp(ctk.CTk):
         welcome_label.grid(row=0, column=0, sticky="w")
 
         # Logout button
-        logout_btn = ctk.CTkButton(header_frame, text="Logout", width=80, height=28, fg_color="gray20", text_color="white",
-                                command=self.logout, corner_radius=8)
+        logout_btn = ctk.CTkButton(
+            header_frame,
+            text="Logout",
+            width=80,
+            height=28,
+            command=self.logout,
+            fg_color="transparent",
+            hover_color="#6A0DAD",
+            border_width=1,
+            border_color="#6A0DAD",
+            text_color="white",
+            corner_radius=8
+        )
         logout_btn.grid(row=0, column=1, sticky="e", padx=(10, 0))
 
         # Map widget (left side)
