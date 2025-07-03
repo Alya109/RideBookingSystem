@@ -48,3 +48,8 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1047,Cancelled,Alya,Motorcycle,"Libis Baesa/Reparo, Quezon City, Philippines","Landcom Village, Manila, Philippines",07-04-2025,5.89,P 118.86
 1048,Cancelled,alya,Motorcycle,"Olympia Ville, Makati, Philippines","San Francisco del Monte, Quezon City, Philippines",07-04-2025,4.59,P 105.90
 1049,Active,Alya,Motorcycle,"Barangay 149, Malabon, Philippines","La Paz, Makati, Philippines",07-04-2025,6.87,P 128.73
+1050,Cancelled,alya,Car,"14.66942, 120.99879","14.60399, 121.02626",07-04-2025,4.86,P 184.04
+1051,Finished,alya,Motorcycle,"San Mateo, Rizal, Philippines","Royal Townhomes, Mandaluyong, Philippines",07-04-2025,9.81,P 158.11
+1052,Finished,132213,Motorcycle,"Navotas, Philippines","Tondo, Manila, Philippines",07-04-2025,2.44,P 84.36
+1053,Finished,alya,Motorcycle,"Makati, Philippines","Pasig, Philippines",07-04-2025,2.49,P 84.87
+1054,Cancelled,alya,Motorcycle,"San Juan, Philippines","Teresa, Rizal, Philippines",07-04-2025,12.36,P 183.60

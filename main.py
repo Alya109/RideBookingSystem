@@ -35,9 +35,10 @@ class RideApp(ctk.CTk):
         self.start_marker = None
         self.end_marker = None
         self.manage_visible = False
-        self.geolocator = Nominatim(user_agent="ride_booking_app", timeout=5)
-    
-
+        self.geolocator = Nominatim(
+            user_agent="ride_booking_app",
+            timeout=5,
+        )
         self.login_ui()
         
     # For threading support
@@ -113,25 +114,25 @@ class RideApp(ctk.CTk):
             text_color="white",
             command=self.handle_login
         ).grid(row=4, column=0, pady=(0, 30))
-
+        
+        # Enter key to login in login screen
+        self.bind("<Return>", lambda event: self.handle_login())
+        
     def handle_login(self):
         username = self.name_entry.get().strip()
         if not username:
             self.warning_label.configure(text="Please enter a username.")
             return
 
-        self.warning_label.configure(text="")  # Clear warning
+        self.warning_label.configure(text="")
         self.username = username
 
-        # Sync toggle state with theme_mode
-        if self.theme_mode == "dark":
-            ctk.set_appearance_mode("dark")
-        else:
-            ctk.set_appearance_mode("light")
+        self.main_ui()  # Create widgets first
 
-        self.main_ui()
+        # THEN apply theme and sync toggle
+        ctk.set_appearance_mode(self.theme_mode)
+        self.apply_theme()  # Optional: to reskin if switching between logins
 
-        # Now correctly reflect current theme visually in the switch
         if self.theme_mode == "dark":
             self.theme_toggle.select()
         else:
@@ -146,6 +147,8 @@ class RideApp(ctk.CTk):
         self.end_marker = None
         self.map_widget = None
         self.vehicle_type = "Car"
+        self.unbind("<Return>")
+
         self.login_ui()
 
     
@@ -228,6 +231,9 @@ class RideApp(ctk.CTk):
         )
         self.manage_result.pack(side="left", padx=8)
         self.cancel_container.grid_remove()
+        
+        self.unbind("<Return>")  # Prevent Enter from doing anything here
+
 
     def apply_theme(self):
         """Re‑skin existing widgets after self.theme_mode changes."""
@@ -247,12 +253,6 @@ class RideApp(ctk.CTk):
         if hasattr(self, "manage_frame"):
             self.manage_frame.configure(fg_color=manage_bg)
 
-        # map tiles
-        if hasattr(self, "map_widget"):
-            dark_tiles  = "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-            light_tiles = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            self.map_widget.set_tile_server(dark_tiles if self.theme_mode=="dark" else light_tiles)
-
         # text colour in manage‑bookings list
         if hasattr(self, "manage_frame") and self.active_tab == "Manage Bookings":
             fg = "#ffffff" if self.theme_mode == "dark" else "#000000"
@@ -261,20 +261,19 @@ class RideApp(ctk.CTk):
                     child.configure(text_color=fg)
 
     def toggle_theme(self):
-        # 1) Get mode from switch
+        # Now we’re checking a boolean
         self.theme_mode = "dark" if self.theme_toggle.get() else "light"
         ctk.set_appearance_mode(self.theme_mode)
 
-        # 2) Update switch look
-        if self.theme_mode == "light":
-            self.theme_toggle.configure(text="🌙", fg_color="#cccccc", progress_color="#6C0DAF")
-        else:
-            self.theme_toggle.configure(text="☀️", fg_color="#2b2b2b", progress_color="#b278ff")
+        # Update toggle visuals
+        self.theme_toggle.configure(
+            text="🌙" if self.theme_mode == "light" else "☀️",
+            fg_color="#cccccc" if self.theme_mode == "light" else "#2b2b2b",
+            progress_color="#6C0DAF" if self.theme_mode == "light" else "#b278ff"
+        )
 
-        # 3) Re‑skin existing widgets (no destruction)
         self.apply_theme()
 
-        # 4) If Manage tab is showing, refresh rows so new text‑colour takes effect
         if getattr(self, "manage_visible", False):
             self.load_bookings()
 
@@ -319,21 +318,19 @@ class RideApp(ctk.CTk):
             right_controls,
             text="🌙",
             command=self.toggle_theme,
-            onvalue="dark",
-            offvalue="light"
+            onvalue=True,
+            offvalue=False
         )
         self.theme_toggle.grid(row=0, column=1)
         
         # Map widget (left side)
         self.map_widget = TkinterMapView(self.book_frame, corner_radius=10)
         # Change tile color depending on theme
-        if self.theme_mode == "dark":
-            self.map_widget.set_tile_server("https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png")
-        else:
-            self.map_widget.set_tile_server("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
+        self.map_widget.set_tile_server("https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png")
         self.map_widget.grid(row=1, column=0, sticky="nsew", padx=(10, 5), pady=(0, 10))
         self.map_widget.set_position(14.5995, 120.9842)
         self.map_widget.set_zoom(12)
+        self.map_widget.canvas_tile_fade = False
         self.map_widget.add_left_click_map_command(self.handle_map_click)
 
         # Route data tracking
