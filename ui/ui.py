@@ -17,8 +17,8 @@ class RideApp(ctk.CTk):
         
         self.theme_mode = "light"       
         self.active_tab = "Book Ride"   
-        
-        self.title("Ride Booking System")
+        self.iconbitmap("assets/gui/app_logo.ico")
+        self.title("SADride")
         self.geometry("1100x700")
         self.minsize(800, 500)
 

@@ -1,4 +1,4 @@
-from gui.ui import RideApp
+from ui.ui import RideApp
 
 def main():
     app = RideApp()
