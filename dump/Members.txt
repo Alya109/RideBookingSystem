@@ -1,8 +1,0 @@
-// Members // Role
-Lumabi // Project Manager, Back-end Developer
-Rivera // UI/UX Designer
-Odrunia // UI/UX Designer
-Modesto // QA/Test Engineer
-Simbulan // Back-end Developer
-Quimen // QA/Test Engineer 
-Araja //  
