@@ -1,5 +1,7 @@
 import customtkinter as ctk
+from threading import Thread
 from geopy.geocoders import Nominatim
+from geopy.adapters import AioHTTPAdapter
 from tkintermapview import TkinterMapView
 from backend.booking_system import BookingSystem
 from backend.distance import StreetCoordinates
@@ -12,6 +14,10 @@ ctk.set_default_color_theme("assets/themes/purple_theme.json")
 class RideApp(ctk.CTk):
     def __init__(self):
         super().__init__()
+        
+        self.theme_mode = "light"       
+        self.active_tab = "Book Ride"   
+        
         self.title("Ride Booking System")
         self.geometry("1100x700")
         self.minsize(800, 500)
@@ -29,10 +35,16 @@ class RideApp(ctk.CTk):
         self.start_marker = None
         self.end_marker = None
         self.manage_visible = False
-        self.geolocator = Nominatim(user_agent="ride_booking_app")
+        self.geolocator = Nominatim(user_agent="ride_booking_app", timeout=5)
     
 
         self.login_ui()
+        
+    # For threading support
+    def threaded(fn):
+        def wrapper(*args, **kwargs):
+            Thread(target=fn, args=args, kwargs=kwargs, daemon=True).start()
+        return wrapper
 
     def login_ui(self):
         self.clear_widgets()
@@ -110,8 +122,21 @@ class RideApp(ctk.CTk):
 
         self.warning_label.configure(text="")  # Clear warning
         self.username = username
+
+        # Sync toggle state with theme_mode
+        if self.theme_mode == "dark":
+            ctk.set_appearance_mode("dark")
+        else:
+            ctk.set_appearance_mode("light")
+
         self.main_ui()
-        
+
+        # Now correctly reflect current theme visually in the switch
+        if self.theme_mode == "dark":
+            self.theme_toggle.select()
+        else:
+            self.theme_toggle.deselect()
+
     def logout(self):
         self.username = ""
         self.clicked_start_coord = None
@@ -147,7 +172,10 @@ class RideApp(ctk.CTk):
         self.book_frame.grid(row=1, column=0, sticky="nsew")
         
         # Manage bookings frame (hidden initially)
-        self.manage_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="#f3dbfb")
+        self.manage_frame = ctk.CTkScrollableFrame(
+            self.main_frame,
+            fg_color="#2a2a2a" if self.theme_mode == "dark" else "#f3dbfb"
+        )
         self.manage_frame.grid(row=1, column=0, sticky="nsew")
         self.manage_frame.grid_remove()
 
@@ -157,12 +185,15 @@ class RideApp(ctk.CTk):
         self.cancel_container = ctk.CTkFrame(self.main_frame, fg_color="transparent")
         self.cancel_container.grid(row=2, column=0, sticky="e", padx=10, pady=5)
 
-        # ► single entry now just “Booking ID”
-        self.booking_id_entry = ctk.CTkEntry(               # renamed (was cancel_entry)
+        # Booking ID entry
+        vcmd = self.register(lambda P: P.isdigit() or P == "")
+        self.booking_id_entry = ctk.CTkEntry(
             self.cancel_container,
             placeholder_text="Booking ID",
-            width=160
-        )
+            width=160,
+            validate="key",
+            validatecommand=(vcmd, "%P")
+)
         self.booking_id_entry.pack(side="left", padx=5)
 
         # Cancel button
@@ -198,8 +229,55 @@ class RideApp(ctk.CTk):
         self.manage_result.pack(side="left", padx=8)
         self.cancel_container.grid_remove()
 
+    def apply_theme(self):
+        """Re‑skin existing widgets after self.theme_mode changes."""
+        # background colors
+        main_bg  = "#f7f1ff" if self.theme_mode == "light" else "#1e1e1e"
+        book_bg  = "#f5e9ff" if self.theme_mode == "light" else "#2a2a2a"
+        right_bg = "#ffffff" if self.theme_mode == "light" else "#2b2b2b"
+        manage_bg= "#f3dbfb" if self.theme_mode == "light" else "#2a2a2a"
 
-                
+        # major frames (check they exist first)
+        if hasattr(self, "main_frame"):
+            self.main_frame.configure(fg_color=main_bg)
+        if hasattr(self, "book_frame"):
+            self.book_frame.configure(fg_color=book_bg)
+        if hasattr(self, "right_panel"):
+            self.right_panel.configure(fg_color=right_bg)
+        if hasattr(self, "manage_frame"):
+            self.manage_frame.configure(fg_color=manage_bg)
+
+        # map tiles
+        if hasattr(self, "map_widget"):
+            dark_tiles  = "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+            light_tiles = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            self.map_widget.set_tile_server(dark_tiles if self.theme_mode=="dark" else light_tiles)
+
+        # text colour in manage‑bookings list
+        if hasattr(self, "manage_frame") and self.active_tab == "Manage Bookings":
+            fg = "#ffffff" if self.theme_mode == "dark" else "#000000"
+            for child in self.manage_frame.winfo_children():
+                if isinstance(child, ctk.CTkLabel):
+                    child.configure(text_color=fg)
+
+    def toggle_theme(self):
+        # 1) Get mode from switch
+        self.theme_mode = "dark" if self.theme_toggle.get() else "light"
+        ctk.set_appearance_mode(self.theme_mode)
+
+        # 2) Update switch look
+        if self.theme_mode == "light":
+            self.theme_toggle.configure(text="🌙", fg_color="#cccccc", progress_color="#6C0DAF")
+        else:
+            self.theme_toggle.configure(text="☀️", fg_color="#2b2b2b", progress_color="#b278ff")
+
+        # 3) Re‑skin existing widgets (no destruction)
+        self.apply_theme()
+
+        # 4) If Manage tab is showing, refresh rows so new text‑colour takes effect
+        if getattr(self, "manage_visible", False):
+            self.load_bookings()
+
     def setup_booking_ui(self):
         # Configure grid layout for responsiveness
         self.book_frame.grid_rowconfigure(1, weight=1)
@@ -208,18 +286,24 @@ class RideApp(ctk.CTk):
         # Header frame for welcome + logout
         header_frame = ctk.CTkFrame(self.book_frame, fg_color="transparent")
         header_frame.grid(row=0, column=0, columnspan=2, sticky="ew", padx=10, pady=(10, 5))
-        header_frame.grid_columnconfigure(0, weight=1)  # Allow welcome label to expand
 
         # Welcome label
-        welcome_label = ctk.CTkLabel(header_frame, text=f"Welcome, {self.username}", font=ctk.CTkFont(size=20))
-        welcome_label.grid(row=0, column=0, sticky="w")
+        welcome_label = ctk.CTkLabel(
+            header_frame,
+            text=f"Welcome, {self.username}",
+            font=ctk.CTkFont(size=20)
+        )
+        welcome_label.pack(side="left", anchor="w")
+
+        # Right: container for logout and toggle
+        right_controls = ctk.CTkFrame(header_frame, fg_color="transparent")
+        right_controls.pack(side="right", anchor="e", padx=(10, 0))
 
         # Logout button
         logout_btn = ctk.CTkButton(
-            header_frame,
+            right_controls,
             text="Logout",
-            width=80,
-            height=28,
+            width=70,
             command=self.logout,
             fg_color="transparent",
             hover_color="#b278ff",
@@ -228,10 +312,25 @@ class RideApp(ctk.CTk):
             text_color="black",
             corner_radius=8
         )
-        logout_btn.grid(row=0, column=1, sticky="e", padx=(10, 0))
+        logout_btn.grid(row=0, column=0, padx=(0, 5))
 
+        # Theme switch
+        self.theme_toggle = ctk.CTkSwitch(
+            right_controls,
+            text="🌙",
+            command=self.toggle_theme,
+            onvalue="dark",
+            offvalue="light"
+        )
+        self.theme_toggle.grid(row=0, column=1)
+        
         # Map widget (left side)
         self.map_widget = TkinterMapView(self.book_frame, corner_radius=10)
+        # Change tile color depending on theme
+        if self.theme_mode == "dark":
+            self.map_widget.set_tile_server("https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png")
+        else:
+            self.map_widget.set_tile_server("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
         self.map_widget.grid(row=1, column=0, sticky="nsew", padx=(10, 5), pady=(0, 10))
         self.map_widget.set_position(14.5995, 120.9842)
         self.map_widget.set_zoom(12)
@@ -244,9 +343,15 @@ class RideApp(ctk.CTk):
         self.route_path = None
 
         # Right panel (info and controls)
-        self.right_panel = ctk.CTkFrame(self.book_frame, corner_radius=10, border_width=1, border_color="#444")
+        self.right_panel = ctk.CTkFrame(
+            self.book_frame,
+            corner_radius=10,
+            border_width=1,
+            border_color="#444",
+            fg_color="#2b2b2b" if self.theme_mode == "dark" else "#f5e9ff"
+        )
         self.right_panel.grid(row=1, column=1, sticky="nsew", padx=(5, 10), pady=(0, 10))
-        self.right_panel.grid_rowconfigure(99, weight=1)  # for spacing
+        self.right_panel.grid_rowconfigure(99, weight=1)
         self.right_panel.grid_columnconfigure(0, weight=1)
 
         self.start_label = ctk.CTkLabel(
@@ -276,12 +381,25 @@ class RideApp(ctk.CTk):
         def set_vehicle_type(vehicle):
             self.vehicle_type = vehicle
             for v_type, btn in self.vehicle_buttons.items():
-                btn.configure(
-                    fg_color="#b278ff" if v_type == vehicle else "transparent",
-                    text_color="white" if v_type == vehicle else "black"
-                )
+                if v_type == vehicle:
+                    btn.configure(
+                        fg_color="#b278ff",
+                        text_color="white",
+                        font=ctk.CTkFont(size=14, weight="bold"),
+                        border_width=2,
+                        border_color="#6A0DAD"
+                    )
+                else:
+                    btn.configure(
+                        fg_color="transparent",
+                        text_color="black",
+                        font=ctk.CTkFont(size=13),
+                        border_width=1,
+                        border_color="#6A0DAD"
+                    )
             if self.clicked_start_coord and self.clicked_end_coord:
                 self.update_estimates_from_clicks()
+
 
         for i, (label, vehicle_name) in enumerate(vehicle_types.items()):
             row = i // 2
@@ -299,13 +417,14 @@ class RideApp(ctk.CTk):
             self.vehicle_buttons[vehicle_name] = btn
 
 
+
         set_vehicle_type("Car")
 
         # ETA and cost
-        self.eta_label = ctk.CTkLabel(self.right_panel, text="🕒 ETA: --")
-        self.eta_label.grid(row=3, column=0, sticky="w", padx=10, pady=(5, 0))
+        self.eta_label = ctk.CTkLabel(self.right_panel, text="🕒 ETA: --", font=ctk.CTkFont(size=20, weight="bold"))
+        self.eta_label.grid(row=3, column=0, sticky="w", padx=10, pady=(10, 2))
 
-        self.price_label = ctk.CTkLabel(self.right_panel, text="💰 Total Cost: --")
+        self.price_label = ctk.CTkLabel(self.right_panel, text="💰 Total Cost: --", font=ctk.CTkFont(size=20, weight="bold"))
         self.price_label.grid(row=4, column=0, sticky="w", padx=10, pady=(0, 10))
 
         # Book Ride button
@@ -325,6 +444,7 @@ class RideApp(ctk.CTk):
             self.cancel_container.grid()         # ✔ show cancel section
             self.manage_visible = True
             self.load_bookings()
+        self.active_tab = selected
 
             
     def get_location_name(self, lat, lon):
@@ -346,20 +466,29 @@ class RideApp(ctk.CTk):
             print(f"[Reverse Geocode Error] {e}")
             return f"{lat:.5f}, {lon:.5f}"
 
+    @threaded
+    def reverse_geocode_start(self, lat, lon):
+        name = self.get_location_name(lat, lon)
+        self.after(0, lambda: self.start_label.configure(text=f"🟢 Start: {name}"))
+
+    @threaded
+    def reverse_geocode_end(self, lat, lon):
+        name = self.get_location_name(lat, lon)
+        self.after(0, lambda: self.end_label.configure(text=f"🔴 End: {name}"))
+
     def handle_map_click(self, coords):
         lat, lon = coords
 
         if self.click_count % 2 == 0:
             # New start point
             self.clicked_start_coord = (lat, lon)
-            print(f"[🟢 Start] Lat: {lat}, Lon: {lon}")  # 👈 Print start coordinates
+            print(f"[🟢 Start] Lat: {lat}, Lon: {lon}")
+            self.show_toast("Start location set.")
 
             if self.start_marker:
                 self.start_marker.delete()
             self.start_marker = self.map_widget.set_marker(lat, lon, text="Start")
-            start_name = self.get_location_name(lat, lon)
-            self.start_label.configure(text=f"🟢 Start: {start_name}")
-
+            self.reverse_geocode_start(lat, lon)
 
             # Clear old end marker and route
             if self.end_marker:
@@ -372,14 +501,14 @@ class RideApp(ctk.CTk):
         else:
             # New end point
             self.clicked_end_coord = (lat, lon)
-            print(f"[🔴 End] Lat: {lat}, Lon: {lon}")  # 👈 Print end coordinates
+            print(f"[🔴 End] Lat: {lat}, Lon: {lon}")
 
             if self.end_marker:
                 self.end_marker.delete()
             self.end_marker = self.map_widget.set_marker(lat, lon, text="End")
-            end_name = self.get_location_name(lat, lon)
-            self.end_label.configure(text=f"🔴 End: {end_name}")
-            
+            self.reverse_geocode_end(lat, lon)
+            self.show_toast("Destination set.")
+
             # Draw route and update estimate
             if self.clicked_start_coord:
                 self.route_path = self.map_widget.set_path([self.clicked_start_coord, self.clicked_end_coord])
@@ -433,7 +562,13 @@ class RideApp(ctk.CTk):
         headers = ["Booking ID", "Status", "User", "Vehicle Type", "From", "To", "Date", "Distance", "Total Cost"]
         header_font = ctk.CTkFont(size=13, weight="bold")
         for col, header in enumerate(headers):
-            label = ctk.CTkLabel(self.manage_frame, text=header, font=header_font, padx=5)
+            label = ctk.CTkLabel(
+                self.manage_frame,
+                text=header,
+                font=header_font,
+                padx=5,
+                text_color="#ffffff" if self.theme_mode == "dark" else "#000000"
+            )
             label.grid(row=0, column=col, sticky="nsew", padx=3, pady=3)
 
         # Render user bookings
@@ -498,31 +633,33 @@ class RideApp(ctk.CTk):
 
                 
     def cancel_booking(self):
-        """Set booking status to 'Cancelled' for the current user."""
-        try:
-            # 1) validate input
-            booking_id = int(self.booking_id_entry.get())
-        except ValueError:
-            self.manage_result.configure(text="❌ Invalid booking ID.")
-        except Exception as e:
-            self.manage_result.configure(text=f"❌ Error: {str(e)}")
+        """Cancel a booking that belongs to the current user."""
+        bid_str = self.booking_id_entry.get().strip()
 
-        df = self.system.view_bookings()
-        booking_row = df[df["Booking ID"] == booking_id]
+        # 1) fast validation
+        if not bid_str.isdigit():
+            self.manage_result.configure(text="❌ Enter a Booking ID.")
+            return
+
+        booking_id = int(bid_str)
 
         # 2) ownership / existence check
-        if booking_row.empty or booking_row.iloc[0]["User"] != self.username:
+        df = self.system.view_bookings()
+        row = df[df["Booking ID"] == booking_id]
+
+        if row.empty or row.iloc[0]["User"] != self.username:
             self.manage_result.configure(text="❌ Booking ID not found.")
             return
 
-        # 3) do the cancellation
-        result = self.system.cancel_booking(booking_id)         # method already exists
+        # 3) perform cancellation
+        result = self.system.cancel_booking(booking_id)
         self.manage_result.configure(text=result)
 
-        self.booking_id_entry.delete(0, 'end')
+        # 4) cleanup UI
+        self.booking_id_entry.delete(0, "end")
         self.load_bookings()
         self.show_toast(result)
-        
+
     def finish_booking(self):
         try:
             booking_id = int(self.booking_id_entry.get())
