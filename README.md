@@ -27,12 +27,15 @@ A simple ride booking system developed as a group project for OOP.
 
 - Python (Object-Oriented Programming)
 - Tkinter
+- Customtkinter
+- Tkintermapview
 - Pillow
-- abc
 - Random
 - Pandas
 - Geopy
 - Datetime
+- Requests
+- ABC
 
 ## 📄 License
 
