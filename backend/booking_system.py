@@ -33,9 +33,6 @@ class Booking:
             "Van": Van()
         }.get(self.vehicle_type, Car())
 
-    def cancel_booking(self):
-        self.status = "Cancelled"
-
     def to_dict(self):
         return {
             "Booking ID": self.booking_id,
@@ -85,11 +82,45 @@ class BookingSystem:
     def view_bookings(self):
         return self.bookings
     
-    def cancel_booking(self, booking_id):
-        mask = self.bookings['Booking ID'] == booking_id
+    def cancel_booking(self, booking_id: int) -> str:
+        """Set status to Cancelled only if it is currently Active."""
+        mask = self.bookings["Booking ID"] == booking_id
         if not mask.any():
-            return "Booking ID not found."
-        self.bookings.loc[mask, 'Status'] = 'Cancelled'
+            return "❌ Booking ID not found."
+
+        current_status = self.bookings.loc[mask, "Status"].iloc[0]
+
+        if current_status == "Finished":
+            return "❌ Ride is already finished. You can’t cancel it."
+        if current_status == "Cancelled":
+            return "ℹ️ Ride is already cancelled."
+
+        # proceed with normal cancellation
+        self.bookings.loc[mask, "Status"] = "Cancelled"
         self._save_to_file()
-        return f"Booking ID {booking_id} has been cancelled."
-    
+        return f"✅ Booking ID {booking_id} has been cancelled."
+
+    def finish_booking(self, booking_id: int) -> str:
+        """Mark a ride Finished and write the CSV back to disk, unless already Cancelled."""
+        idx = self.bookings[self.bookings["Booking ID"] == booking_id].index
+        if idx.empty:
+            return "❌ Booking ID not found."
+
+        # ⛔ Prevent marking a Cancelled ride as Finished
+        current_status = self.bookings.loc[idx[0], "Status"]
+        if current_status == "Cancelled":
+            return "❌ Cannot finish a cancelled booking."
+
+        self.bookings.loc[idx, "Status"] = "Finished"
+        self._save_to_file()
+        return "✅ Booking marked as finished."
+
+    def update_status(self, booking_id: int, new_status: str) -> str:
+        """Generic status setter (optional, but nice to have)."""
+        idx = self.bookings[self.bookings["Booking ID"] == booking_id].index
+        if idx.empty:
+            return "❌ Booking ID not found."
+
+        self.bookings.loc[idx, "Status"] = new_status
+        self._save_to_file()                       # ← same fix here
+        return f"✅ Booking set to {new_status}."

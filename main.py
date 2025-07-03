@@ -153,35 +153,51 @@ class RideApp(ctk.CTk):
 
         self.setup_booking_ui()
 
-        # --- Bottom-right cancel container ---
+        # --- Bottom‑right manage‑toolbar (Cancel / Finish) ---
         self.cancel_container = ctk.CTkFrame(self.main_frame, fg_color="transparent")
         self.cancel_container.grid(row=2, column=0, sticky="e", padx=10, pady=5)
 
-        self.cancel_entry = ctk.CTkEntry(self.cancel_container, placeholder_text="Enter Booking ID to cancel", width=200)
-        self.cancel_entry.pack(side="left", padx=5)
-
-        cancel_btn = ctk.CTkButton(
+        # ► single entry now just “Booking ID”
+        self.booking_id_entry = ctk.CTkEntry(               # renamed (was cancel_entry)
             self.cancel_container,
-            text="Cancel Booking",
-            command=self.cancel_booking,
-            # fg_color="#6A0DAD",
-            # hover_color="#5A0CAD",
-            text_color="white",
-            corner_radius=8
+            placeholder_text="Booking ID",
+            width=160
         )
-        cancel_btn.pack(side="left", padx=5)
+        self.booking_id_entry.pack(side="left", padx=5)
 
-        self.cancel_result = ctk.CTkLabel(
+        # Cancel button
+        ctk.CTkButton(
+            self.cancel_container,
+            text="Cancel",
+            command=self.cancel_booking,
+            fg_color="#d9534f",
+            hover_color="#c7423e",
+            width=90,
+            corner_radius=6,
+        ).pack(side="left", padx=(0, 5))
+
+        # Finish button
+        ctk.CTkButton(
+            self.cancel_container,
+            text="Finish",
+            command=self.finish_booking,
+            fg_color="#5cb85c",
+            hover_color="#4ba34b",
+            width=90,
+            corner_radius=6,
+        ).pack(side="left")
+
+        # Status / result label
+        self.manage_result = ctk.CTkLabel(
             self.cancel_container,
             text="",
             text_color="white",
             anchor="w",
-            width=300  # Optional: force space for text to align left
+            width=260
         )
-        self.cancel_result.pack(side="left", padx=5)
-
-        # Hide initially
+        self.manage_result.pack(side="left", padx=8)
         self.cancel_container.grid_remove()
+
 
                 
     def setup_booking_ui(self):
@@ -249,8 +265,14 @@ class RideApp(ctk.CTk):
         vehicle_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.vehicle_buttons = {}
-        vehicle_types = ["Motorcycle", "Taxi", "Car", "Electric Car", "Van"]
-
+        vehicle_types = {
+            "🛵 Motorcycle": "Motorcycle",
+            "🚕 Taxi": "Taxi",
+            "🚗 Car": "Car",
+            "⚡ Electric Car": "Electric Car",
+            "🚐 Van": "Van"
+        }
+        
         def set_vehicle_type(vehicle):
             self.vehicle_type = vehicle
             for v_type, btn in self.vehicle_buttons.items():
@@ -261,15 +283,21 @@ class RideApp(ctk.CTk):
             if self.clicked_start_coord and self.clicked_end_coord:
                 self.update_estimates_from_clicks()
 
-        for i, vehicle in enumerate(vehicle_types):
+        for i, (label, vehicle_name) in enumerate(vehicle_types.items()):
             row = i // 2
             col = i % 2
             btn = ctk.CTkButton(
-                vehicle_frame, text=vehicle, command=lambda v=vehicle: set_vehicle_type(v),
-                fg_color="transparent", text_color="black", border_width=1, border_color="#6A0DAD"
+                vehicle_frame,
+                text=label,
+                command=lambda v=vehicle_name: set_vehicle_type(v),
+                fg_color="transparent",
+                text_color="black",
+                border_width=1,
+                border_color="#6A0DAD"
             )
             btn.grid(row=row, column=col, padx=5, pady=5, sticky="ew")
-            self.vehicle_buttons[vehicle] = btn
+            self.vehicle_buttons[vehicle_name] = btn
+
 
         set_vehicle_type("Car")
 
@@ -470,42 +498,54 @@ class RideApp(ctk.CTk):
 
                 
     def cancel_booking(self):
+        """Set booking status to 'Cancelled' for the current user."""
         try:
-            if not hasattr(self, "cancel_entry") or not self.cancel_entry:
-                return  # Cancel UI not visible or not initialized
-
-            booking_id = int(self.cancel_entry.get())
-            df = self.system.view_bookings()
-
-            # Find matching booking
-            booking_row = df[df["Booking ID"] == booking_id]
-
-            if booking_row.empty:
-                if self.cancel_result:
-                    self.cancel_result.configure(text="❌ Booking ID not found.")
-                return
-
-            if booking_row.iloc[0]["User"] != self.username:
-                if self.cancel_result:
-                    self.cancel_result.configure(text="❌ Booking ID not found.")
-                return
-
-            # Proceed to cancel
-            result = self.system.cancel_booking(booking_id)
-            if self.cancel_result:
-                self.cancel_result.configure(text=result)
-            self.cancel_entry.delete(0, 'end')
-            self.load_bookings()
-            self.show_toast(result)
-
+            # 1) validate input
+            booking_id = int(self.booking_id_entry.get())
         except ValueError:
-            if self.cancel_result:
-                self.cancel_result.configure(text="❌ Invalid booking ID.")
+            self.manage_result.configure(text="❌ Invalid booking ID.")
         except Exception as e:
-            if self.cancel_result:
-                self.cancel_result.configure(text=f"❌ Error: {str(e)}")
+            self.manage_result.configure(text=f"❌ Error: {str(e)}")
 
-    def show_toast(self, message, duration=2000):
+        df = self.system.view_bookings()
+        booking_row = df[df["Booking ID"] == booking_id]
+
+        # 2) ownership / existence check
+        if booking_row.empty or booking_row.iloc[0]["User"] != self.username:
+            self.manage_result.configure(text="❌ Booking ID not found.")
+            return
+
+        # 3) do the cancellation
+        result = self.system.cancel_booking(booking_id)         # method already exists
+        self.manage_result.configure(text=result)
+
+        self.booking_id_entry.delete(0, 'end')
+        self.load_bookings()
+        self.show_toast(result)
+        
+    def finish_booking(self):
+        try:
+            booking_id = int(self.booking_id_entry.get())
+        except ValueError:
+            self.manage_result.configure(text="❌ Invalid booking ID.")
+            return
+
+        df = self.system.view_bookings()
+        booking_row = df[df["Booking ID"] == booking_id]
+
+        if booking_row.empty or booking_row.iloc[0]["User"] != self.username:
+            self.manage_result.configure(text="❌ Booking ID not found.")
+            return
+
+        # simple call – we just added this in the backend
+        result = self.system.finish_booking(booking_id)
+
+        self.manage_result.configure(text=result)
+        self.booking_id_entry.delete(0, 'end')
+        self.load_bookings()
+        self.show_toast(result)
+
+    def show_toast(self, message, duration=5000):
         toast = ctk.CTkLabel(self, text=message, fg_color="#323232", text_color="white", corner_radius=10, font=ctk.CTkFont(size=14))
         toast.place(relx=0.5, rely=0.05, anchor="n")
 

@@ -11,7 +11,7 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1010,Cancelled,Earl,Motorcycle,Sumulong Highway,Pureza Street,07-01-2025,9.73,P 157.26
 1011,Cancelled,Hdwadda,Car,Carlos P. Garcia Avenue,McArthur Highway,07-02-2025,32.73,P 662.24
 1012,Cancelled,Megumi,Car,32nd Street,Don Mariano Marcos Avenue,07-02-2025,8.59,P 246.20
-1013,Active,Alya,Car,32nd Street,Kalayaan Avenue,07-02-2025,1.56,P 125.80
+1013,Finished,Alya,Car,32nd Street,Kalayaan Avenue,07-02-2025,1.56,P 125.80
 1014,Cancelled,Alya,Motorcycle,32nd Street,Magsaysay Avenue,07-02-2025,156.95,P 1629.50
 1015,Cancelled,Alya,Motorcycle,Don Mariano Marcos Avenue,P. Burgos Street,07-02-2025,63.07,P 690.71
 1016,Cancelled,Alya,Van,Don Mariano Marcos Avenue,P. Burgos Street,07-02-2025,63.07,P 1540.13
@@ -28,7 +28,7 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1027,Cancelled,123123,Motorcycle,"Masambong, Quezon City, Philippines","Olympia Ville, Makati, Philippines",07-02-2025,5.09,P 110.86
 1028,Cancelled,Alya,Motorcycle,"Santa Mesa Heights, Quezon City, Philippines","Manila, Philippines",07-02-2025,3.15,P 91.53
 1029,Cancelled,Alya,Motorcycle,"Zone 7, Caloocan, Philippines","San Andres Bukid, Manila, Philippines",07-02-2025,6.12,P 121.22
-1030,Active,Alya,Van,"Santa Mesa Heights, Quezon City, Philippines","Diliman, Quezon City, Philippines",07-02-2025,3.46,P 196.40
+1030,Cancelled,Alya,Van,"Santa Mesa Heights, Quezon City, Philippines","Diliman, Quezon City, Philippines",07-02-2025,3.46,P 196.40
 1031,Active,Megumi,Motorcycle,"Project 4, Quezon City, Philippines","Taguig, Philippines",07-02-2025,6.55,P 125.48
 1032,Cancelled,Alya,Motorcycle,"Barangay 154, Caloocan, Philippines","Salcedo, Makati, Philippines",07-02-2025,7.66,P 136.62
 1033,Cancelled,Ichika,Motorcycle,"San Mateo, Rizal, Philippines","New Marikina Subdivision, Marikina, Philippines",07-02-2025,4.45,P 104.50
@@ -36,5 +36,9 @@ Booking ID,Status,User,Vehicle Type,From,To,Date,Distance,Total Cost
 1035,Cancelled,Alya,Motorcycle,"Ruby Ville 2, Valenzuela, Philippines","Legazpi, Makati, Philippines",07-02-2025,10.72,P 167.18
 1036,Active,Orencchi,Electric Car,"Diliman, Quezon City, Philippines","Sampaloc, Manila, Philippines",07-02-2025,4.28,P 175.87
 1037,Cancelled,Alya,Motorcycle,"Barangay 73, Caloocan, Philippines","Minuyan Proper, San Jose del Monte, Bulacan, Philippines",07-02-2025,14.53,P 205.34
-1038,Active,Alya,Car,"Libis Baesa/Reparo, Caloocan, Philippines","Barangay 584, Manila, Philippines",07-02-2025,5.19,P 190.70
+1038,Cancelled,Alya,Car,"Libis Baesa/Reparo, Caloocan, Philippines","Barangay 584, Manila, Philippines",07-02-2025,5.19,P 190.70
 1039,Cancelled,Alya,Motorcycle,"Quezon City, Philippines","Paliparan Subdivision, Marikina, Philippines",07-02-2025,5.06,P 110.55
+1040,Cancelled,Alya,Motorcycle,"Scout Area, Quezon City, Philippines","Kangkong, Quezon City, Philippines",07-04-2025,2.52,P 143.28
+1041,Cancelled,Alya,Motorcycle,"Libis Baesa/Reparo, Caloocan, Philippines","Makati, Philippines",07-04-2025,8.73,P 147.33
+1042,Cancelled,Alya,Motorcycle,"Barangay 149, Caloocan, Philippines","Santa Mesa, Manila, Philippines",07-04-2025,5.11,P 111.15
+1043,Finished,Alya,Motorcycle,"Bagong Lipunan ng Crame, Quezon City, Philippines","Project 7, Quezon City, Philippines",07-04-2025,4.07,P 100.70
