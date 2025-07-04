@@ -38,8 +38,8 @@ A simple ride booking system developed as a group project for OOP.
 
 ## 📄 Project Documents
 
-- [SADride User Guide](SADride User Guide.pdf)
-- [Project Final Report](G8 - SADride Project Final Report.pdf)
+- [SADride User Guide](SADride_User_Guide.pdf)
+- [Project Final Report](G8_SADride_Project_Final_Report.pdf)
 
 ## 📄 License
 
