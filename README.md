@@ -29,13 +29,17 @@ A simple ride booking system developed as a group project for OOP.
 - Tkinter
 - Customtkinter
 - Tkintermapview
-- Pillow
 - Random
 - Pandas
 - Geopy
 - Datetime
 - Requests
 - ABC
+
+## 📄 Project Documents
+
+- [SADride User Guide](SADride User Guide.pdf)
+- [Project Final Report](G8 - SADride Project Final Report.pdf)
 
 ## 📄 License
 
