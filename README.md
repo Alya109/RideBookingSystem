@@ -47,4 +47,4 @@ This project is licensed under the [GNU GPL v3](LICENSE).
 
 ---
 
-> Made with ❤️ by the RideBookingSystem Team
+> Made with ❤️ by the SADride Team
