@@ -39,7 +39,7 @@ A simple ride booking system developed as a group project for OOP.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU GPL v3](LICENSE).
 
 ---
 
