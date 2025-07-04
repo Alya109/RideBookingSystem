@@ -1,4 +1,4 @@
-# 🚗 RideBookingSystem
+# 🚗 SADride
 
 A simple ride booking system developed as a group project for OOP.
 
